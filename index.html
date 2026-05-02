@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vivv — arriving, quietly</title>
+<meta name="description" content="vivv is being built for the things most people never say out loud. A voice. A name. Sixty seconds."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=Figtree:ital,wght@0,300;0,400;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:    #FFFFFF;
+  --surface:  #FFFFFF;
+  --ink:      #000000;
+  --ink-mid:  #222222;
+  --line:     #888888;
+  --line-lt:  rgba(0,0,0,0.06);
+  --seen:     #FFCC00;
+  --held:     #2FAE66;
+  --lifted:   #0088FF;
+  --lime:     #A8E040;
+  --sans:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --serif:    'Figtree', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   ATMOSPHERE LAYER
+   ═══════════════════════════════════════ */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.whisper-line {
+  position: absolute;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.04;
+  animation: drift 30s infinite alternate ease-in-out;
+}
+
+#stardust {
+  position: absolute;
+  inset: 0;
+}
+
+@keyframes drift {
+  from { transform: translate(-2%, -2%) rotate(-1deg); }
+  to { transform: translate(2%, 2%) rotate(1deg); }
+}
+
+/* ═══════════════════════════════════════
+   CONTENT STRUCTURE
+   ═══════════════════════════════════════ */
+main {
+  position: relative;
+  z-index: 2;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 60px 24px 120px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(100px, 15vh, 160px);
+  opacity: 0;
+  animation: fade-in 1s forwards ease-out;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.wordmark {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+}
+
+.status {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot-pulse {
+  width: 5px;
+  height: 5px;
+  background: var(--ink);
+  border-radius: 50%;
+  animation: pulse-dot 2.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  margin-bottom: 120px;
+}
+
+.hero-visual {
+  display: inline-block;
+  margin-bottom: 60px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slide-up 1s 0.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rec-btn-ritual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ripple {
+  position: absolute;
+  inset: -20px;
+  border: 1px solid var(--line-lt);
+  border-radius: 50%;
+  animation: ripple-out 4s infinite ease-out;
+}
+
+@keyframes ripple-out {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to { transform: scale(1.8); opacity: 0; }
+}
+
+.headline {
+  font-size: clamp(48px, 10vw, 84px);
+  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slide-up 1s 0.4s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.headline em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  display: block;
+}
+
+/* ── Manifesto ── */
+.manifesto {
+  margin-top: 100px;
+  opacity: 0;
+  animation: fade-in 2s 0.8s forwards;
+}
+
+.body-text {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 300;
+  color: var(--ink-mid);
+  margin-bottom: 32px;
+  letter-spacing: -0.015em;
+}
+
+.body-text strong {
+  font-weight: 800; /* Consistency */
+}
+
+.body-text em {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink);
+}
+
+.divider {
+  height: 1px;
+  background: var(--line-lt);
+  width: 40px;
+  margin: 60px 0;
+}
+
+/* ── Prompt Section ── */
+.prompt-card {
+  margin: 100px 0;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--line-lt);
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slide-up 1s 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prompt-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--line);
+  margin-bottom: 24px;
+  display: block;
+}
+
+.prompt-text {
+  font-family: var(--serif);
+  font-size: clamp(24px, 4vw, 32px);
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+/* ── Waitlist ── */
+.waitlist {
+  margin-top: 100px;
+  opacity: 0;
+  animation: fade-in 1s 1.5s forwards;
+}
+
+.waitlist-label {
+  font-size: 15px;
+  color: var(--line);
+  margin-bottom: 24px;
+}
+
+form {
+  display: flex;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 8px;
+}
+
+input[type="email"] {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 300;
+  outline: none;
+}
+
+button {
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  padding-left: 20px;
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button:hover { opacity: 0.5; }
+
+.success-msg {
+  display: none;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* ── Footer ── */
+footer {
+  margin-top: 140px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line-lt);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--line);
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: fade-in 1.2s 1.8s forwards;
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  main { padding: 40px 20px 80px; }
+  .prompt-card { padding: 30px; }
+}
+</style>
+</head>
+<body>
+
+<div class="atmosphere" aria-hidden="true">
+  <div id="stardust"></div>
+  <svg width="100%" height="100%" style="position:absolute; inset:0;">
+    <path d="M-100,200 Q200,50 500,250 T1200,150" class="whisper-line" />
+    <path d="M1400,300 Q1000,500 700,200 T-200,400" class="whisper-line" style="animation-delay: -5s;" />
+  </svg>
+</div>
+
+<main>
+  <header>
+    <div class="brand">
+      <img src="image_14308c.png" alt="vivv logo" class="brand-logo">
+      <div class="wordmark">vivv</div>
+    </div>
+    <div class="status">
+      <div class="dot-pulse"></div>
+      quiet build
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-visual">
+      <div class="rec-btn-ritual">
+        <div class="ripple"></div>
+        <svg width="140" height="140" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="58" fill="none" stroke="var(--line-lt)" stroke-width="1"/>
+          <circle cx="60" cy="60" r="45" fill="var(--seen)"/>
+          <!-- 
+            Central Element: Green Paper Plane motif 
+            Tilted -20 degrees, facing right and upwards 
+          -->
+          <g transform="translate(60 60) rotate(-20)">
+            <path d="M-12,-10 L18,0 L-12,10 L-8,0 Z" 
+                  fill="var(--lime)" 
+                  stroke="var(--held)" 
+                  stroke-width="1.2" 
+                  stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="headline">
+      the most important<br>
+      things go <em>unsaid.</em>
+    </h1>
+  </section>
+
+  <section class="manifesto">
+    <p class="body-text">
+      The tools we built to bring us together became tools for performance. They reward the broadcast, the visual, and the immediate.
+    </p>
+
+    <p class="body-text">
+      They left no room for the weight of the human voice—the warmth, the breath, the things that only reveal themselves in <em>sixty seconds of honesty.</em>
+    </p>
+
+    <div class="divider"></div>
+
+    <p class="body-text">
+      <strong class="wordmark">vivv</strong> is an arriving ritual.
+    </p>
+
+    <p class="body-text">
+      It is a place to put the gratitude you've been carrying. The <em>"you saved me"</em> that doesn't fit in a text. The <em>"I noticed"</em> that deserves to be heard, not just seen.
+    </p>
+
+    <p class="body-text">
+      It’s about the voice, not the view.<br>
+      About <em>giving</em>, not looking.
+    </p>
+  </section>
+
+  <div class="prompt-card">
+    <span class="prompt-label">a thought for today</span>
+    <p class="prompt-text" id="daily-prompt">Loading reflection...</p>
+  </div>
+
+  <section class="waitlist">
+    <div class="waitlist-label">We’ll notify you first, quietly.</div>
+    <form id="signup-form">
+      <input type="email" id="email-input" placeholder="you@somewhere.quiet" required>
+      <button type="submit">Keep me</button>
+    </form>
+    <p class="success-msg" id="success-msg">Kept. We'll find you when it's time.</p>
+  </section>
+
+  <footer>
+    <div class="brand">
+      <img src="image_14308c.png" alt="" class="brand-logo" style="width: 20px; height: 20px;">
+      <div class="wordmark" style="font-size: 14px;">vivv</div>
+    </div>
+    <span>© 2024 · ARRIVING QUIETLY</span>
+  </footer>
+</main>
+
+<script>
+  // Daily prompts
+  const prompts = [
+    "who changed everything for you, and never heard you say it?",
+    "what thank-you have you been carrying for too long?",
+    "who saw you on a day you didn't want to be seen?",
+    "whose voice do you need to hear right now?",
+    "what small gesture from years ago do you still remember?",
+    "who believed in you before you were ready to?",
+    "if you had sixty seconds today, who gets them?"
+  ];
+
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+  document.getElementById('daily-prompt').innerText = prompts[dayOfYear % prompts.length];
+
+  // Particle background (stardust)
+  const stardustContainer = document.getElementById('stardust');
+  for (let i = 0; i < 25; i++) {
+    const star = document.createElement('div');
+    star.style.position = 'absolute';
+    star.style.width = '1.5px';
+    star.style.height = '1.5px';
+    star.style.background = '#000';
+    star.style.borderRadius = '50%';
+    star.style.top = Math.random() * 100 + 'vh';
+    star.style.left = Math.random() * 100 + 'vw';
+    star.style.opacity = '0';
+    star.style.animation = `blink ${5 + Math.random() * 5}s infinite ease-in-out`;
+    star.style.animationDelay = `${Math.random() * 5}s`;
+    stardustContainer.appendChild(star);
+  }
+
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 0.1; } }`;
+  document.head.appendChild(style);
+
+  // Form handling
+  const form = document.getElementById('signup-form');
+  const success = document.getElementById('success-msg');
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    form.style.opacity = '0.3';
+    form.style.pointerEvents = 'none';
+    success.style.display = 'block';
+  };
+</script>
+
+</body>
+</html>
