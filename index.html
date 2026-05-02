@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vivv — arriving, quietly</title>
+<meta name="description" content="vivv is being built for the things most people never say out loud. A voice. A name. Sixty seconds."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=Figtree:ital,wght@0,300;0,400;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:    #FFFFFF;
+  --surface:  #FFFFFF;
+  --ink:      #000000;
+  --ink-mid:  #222222;
+  --line:     #888888;
+  --line-lt:  rgba(0,0,0,0.08);
+  --seen:     #FFCC00;
+  --held:     #2FAE66;
+  --lifted:   #0088FF;
+  --lime:     #D6F73C;
+  --sans:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --serif:    'Figtree', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════
+   ATMOSPHERE LAYER
+   ═══════════════════════════════════════ */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.08;
+  animation: pulse-glow 15s infinite alternate ease-in-out;
+}
+.glow-y { background: var(--seen); top: -10%; right: -5%; }
+.glow-g { background: var(--held); bottom: -10%; left: -5%; animation-delay: -5s; }
+
+@keyframes pulse-glow {
+  from { transform: scale(1) translate(0, 0); opacity: 0.05; }
+  to { transform: scale(1.3) translate(2%, 2%); opacity: 0.12; }
+}
+
+/* Voice waveform lines in atmosphere */
+.voice-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+}
+.voice-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.vl-yellow { stroke: var(--seen); }
+.vl-green  { stroke: var(--held); }
+.vl-blue   { stroke: var(--lifted); }
+
+@keyframes drift-line {
+  0%   { transform: translateX(0) translateY(0); }
+  50%  { transform: translateX(15px) translateY(-8px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+.drift-1 { animation: drift-line 20s infinite ease-in-out; }
+.drift-2 { animation: drift-line 25s infinite ease-in-out; animation-delay: -8s; }
+.drift-3 { animation: drift-line 18s infinite ease-in-out; animation-delay: -14s; }
+
+/* ═══════════════════════════════════════
+   CONTENT STRUCTURE
+   ═══════════════════════════════════════ */
+main {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 80px 24px 140px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 140px;
+  opacity: 0;
+  animation: fade-in 1.2s forwards ease-out;
+}
+
+.wordmark {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  text-transform: lowercase;
+}
+
+.vivv-brand {
+  font-family: var(--sans);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+}
+
+.status {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot-pulse {
+  width: 5px;
+  height: 5px;
+  background: var(--ink);
+  border-radius: 50%;
+  animation: pulse-dot 2.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.2; transform: scale(1); }
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  margin-bottom: 120px;
+}
+
+.headline {
+  font-size: clamp(52px, 12vw, 84px);
+  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slide-up 1.2s 0.4s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.headline em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  display: block;
+  opacity: 0.8;
+}
+
+/* ── Manifesto ── */
+.manifesto {
+  margin-top: 100px;
+  opacity: 0;
+  animation: fade-in 2s 0.8s forwards;
+}
+
+.body-text {
+  font-size: clamp(18px, 3vw, 21px);
+  font-weight: 300;
+  color: var(--ink-mid);
+  margin-bottom: 36px;
+  letter-spacing: -0.01em;
+}
+
+.body-text em {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.inline-wave {
+  margin: 48px 0;
+  opacity: 0;
+  animation: fade-in 2s 1s forwards;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 12px 4px;
+  border-radius: 100px;
+  font-size: 0.8em;
+  font-family: var(--serif);
+  font-style: italic;
+  vertical-align: middle;
+  transform: translateY(-2px);
+  margin: 0 4px;
+  border: 1px solid var(--line-lt);
+}
+.pill-dark { background: var(--ink); color: #fff; border: none; }
+
+/* ── Prompt Card ── */
+.prompt-section {
+  margin: 120px 0;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slide-up 1.2s 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prompt-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--line);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prompt-text {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--ink);
+  max-width: 500px;
+}
+
+/* ── Signup ── */
+.waitlist {
+  margin-top: 120px;
+  opacity: 0;
+  animation: fade-in 1.2s 1.5s forwards;
+}
+
+form {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 12px;
+  margin: 40px 0;
+}
+
+input[type="email"] {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+  font-family: var(--sans);
+  font-size: 18px;
+  outline: none;
+}
+
+button {
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  padding: 10px 0 10px 20px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.success-msg {
+  display: none;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--held);
+  font-size: 18px;
+}
+
+/* ── Footer ── */
+footer {
+  margin-top: 140px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line-lt);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--line);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fade-in 1.2s 1.8s forwards;
+}
+
+footer .vivv-brand {
+  font-size: 11px;
+  color: var(--line);
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  main { padding: 60px 20px 100px; }
+  .headline { font-size: 48px; }
+  header { margin-bottom: 80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="atmosphere" aria-hidden="true">
+  <div class="glow glow-y"></div>
+  <div class="glow glow-g"></div>
+  <div id="stardust"></div>
+
+  <!-- Colored voice waveform lines floating in background -->
+  <svg class="voice-lines" viewBox="0 0 1400 900" preserveAspectRatio="none">
+    <g class="drift-1">
+      <path d="M-50,180 C100,80 200,280 350,200 C500,120 550,300 700,250 C850,200 900,100 1050,180 C1200,260 1300,140 1450,200" class="voice-line vl-yellow"/>
+    </g>
+    <g class="drift-2">
+      <path d="M-80,500 C80,400 180,600 330,520 C480,440 530,620 680,570 C830,520 880,420 1030,500 C1180,580 1280,460 1430,520" class="voice-line vl-green"/>
+    </g>
+    <g class="drift-3">
+      <path d="M-30,720 C120,620 220,820 370,740 C520,660 570,840 720,790 C870,740 920,640 1070,720 C1220,800 1320,680 1470,740" class="voice-line vl-blue"/>
+    </g>
+  </svg>
+</div>
+
+<main>
+  <header>
+    <div class="wordmark">vivv</div>
+    <div class="status">
+      <div class="dot-pulse"></div>
+      quiet build
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="headline">
+      the most important<br>
+      things go <em>unsaid.</em>
+    </h1>
+  </section>
+
+  <section class="manifesto">
+    <p class="body-text">
+      The tools we built to bring us together became tools for <span class="pill pill-dark">performance.</span>
+    </p>
+
+    <p class="body-text">
+      They reward the broadcast, the visual, and the immediate. They left no room for the weight of the human voice—the warmth, the catch in the breath, the things that only reveal themselves in sixty seconds of honesty.
+    </p>
+
+    <!-- Tricolor voice waveform divider -->
+    <div class="inline-wave">
+      <svg width="240" height="32" viewBox="0 0 240 32">
+        <path d="M0,16 C15,4 30,28 50,16 C70,4 85,28 105,16" fill="none" stroke="#FFCC00" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <path d="M70,16 C90,4 105,28 125,16 C145,4 160,28 180,16" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+        <path d="M145,16 C165,4 180,28 200,16 C220,4 230,28 240,16" fill="none" stroke="#0088FF" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+      </svg>
+    </div>
+
+    <p class="body-text">
+      <span class="vivv-brand">vivv</span> is an arriving ritual.
+    </p>
+
+    <p class="body-text">
+      It is a place to put the gratitude you've been carrying for years. The <em>"you saved me"</em> that doesn't fit in a text. The <em>"I noticed"</em> that deserves to be heard, not just seen.
+    </p>
+
+    <p class="body-text">
+      It's about the voice, not the view.<br>
+      About <em>giving</em>, not looking.
+    </p>
+  </section>
+
+  <div class="prompt-section">
+    <span class="prompt-label">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <circle cx="6" cy="6" r="5" fill="none" stroke="#FFCC00" stroke-width="1" opacity="0.6"/>
+        <circle cx="6" cy="6" r="2.5" fill="#FFCC00">
+          <animate attributeName="r" values="2.5;3;2.5" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+      a thought for today
+    </span>
+    <p class="prompt-text" id="daily-prompt">Loading...</p>
+  </div>
+
+  <section class="waitlist">
+    <p class="body-text" style="font-size: 16px; margin-bottom: 0;">We'll notify you first.</p>
+    
+    <form id="signup-form">
+      <input type="email" id="email-input" placeholder="email@address.com" required>
+      <button type="submit">Submit</button>
+    </form>
+    <p class="success-msg" id="success-msg">Kept. We'll be in touch.</p>
+  </section>
+
+  <footer>
+    <span>&copy; <span class="vivv-brand">vivv</span> <span id="year"></span></span>
+    <!-- Tricolor wiggle in footer -->
+    <svg width="60" height="16" viewBox="0 0 60 16" style="opacity:0.4;">
+      <path d="M0,8 C8,2 16,14 24,8" fill="none" stroke="#FFCC00" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M18,8 C26,2 34,14 42,8" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M36,8 C44,2 52,14 60,8" fill="none" stroke="#0088FF" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span>ARRIVING QUIETLY</span>
+  </footer>
+</main>
+
+<script>
+  const prompts = [
+    "who changed everything for you, and never heard you say it?",
+    "what thank-you have you been carrying for too long?",
+    "who saw you on a day you didn't want to be seen?",
+    "whose voice do you need to hear right now?",
+    "what small gesture from years ago do you still remember?",
+    "who believed in you before you were ready to believe in yourself?",
+    "if you had sixty seconds today, who gets them?"
+  ];
+
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+  document.getElementById('daily-prompt').innerText = prompts[dayOfYear % prompts.length];
+  document.getElementById('year').innerText = today.getFullYear();
+
+  // Subtle stardust
+  const stardustContainer = document.getElementById('stardust');
+  for (let i = 0; i < 20; i++) {
+    const star = document.createElement('div');
+    star.style.position = 'absolute';
+    star.style.width = '1.5px';
+    star.style.height = '1.5px';
+    star.style.background = '#000';
+    star.style.borderRadius = '50%';
+    star.style.top = Math.random() * 100 + 'vh';
+    star.style.left = Math.random() * 100 + 'vw';
+    star.style.opacity = '0';
+    star.style.animation = `blink ${4 + Math.random() * 6}s infinite ease-in-out`;
+    star.style.animationDelay = `${Math.random() * 5}s`;
+    stardustContainer.appendChild(star);
+  }
+
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 0.15; } }`;
+  document.head.appendChild(style);
+
+  // Form Handling
+  const form = document.getElementById('signup-form');
+  const input = document.getElementById('email-input');
+  const success = document.getElementById('success-msg');
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    form.style.display = 'none';
+    success.style.display = 'block';
+  };
+</script>
+
+</body>
+</html>
